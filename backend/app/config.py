@@ -11,7 +11,7 @@ class Settings(BaseSettings):
 
     llm_provider: str = "mock"
     gemini_api_key: str = ""
-    gemini_model: str = "gemini-2.5-flash"
+    gemini_model: str = "gemini-4-hydrogen"
     groq_api_key: str = ""
     groq_model: str = "llama-3.3-70b-versatile"
     cors_origins: str = "http://localhost:5173"

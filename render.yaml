@@ -11,6 +11,8 @@ services:
     envVars:
       - key: LLM_PROVIDER
         value: gemini
+      - key: GEMINI_MODEL
+        value: gemini-4-hydrogen
       - key: GEMINI_API_KEY
         sync: false   # set this secret in the Render dashboard
       - key: CORS_ORIGINS
