@@ -7,7 +7,9 @@ Paste a job posting, add your resume or past entry sheet (ES) answers, and get:
 
 Answers are **grounded in your own documents** with retrieval-augmented generation (RAG), so the model writes about experience you actually have and you can see which excerpts it used.
 
-**Live demo:** _coming soon_ · **API docs:** `/docs` on the API server
+**Live demo:** https://shukatsu-assistant.vercel.app · **API docs:** https://shukatsu-assistant.onrender.com/docs
+
+> The API runs on Render's free plan and sleeps when idle, so the first request can take about a minute.
 
 ![Screenshot](docs/screenshot.png)
 
@@ -101,7 +103,7 @@ Lambda fits this API well: requests are short and stateless, traffic is spiky, a
 
 - [x] v0.1: fit score, ES drafts, PDF upload, TF‑IDF retrieval, mock provider, CI
 - [x] Rate limiting per IP and per day to protect the free LLM quota
-- [ ] Live demo deployed on Vercel + Render
+- [x] Live demo deployed on Vercel + Render
 - [ ] Embedding‑based retrieval (vector search) and a comparison with TF‑IDF
 - [ ] Save documents in the browser so you don't re‑upload
 - [ ] More ES questions (自己PR, 挫折経験)
