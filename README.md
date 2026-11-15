@@ -33,7 +33,7 @@ flowchart LR
 3. The top 5 chunks go into the prompt as numbered excerpts. The prompt tells the model to use only those facts.
 4. The LLM returns JSON, which FastAPI validates with Pydantic before sending it back with the excerpts as evidence.
 
-The API is **stateless**: nothing is stored, which keeps it simple, private, and easy to run on serverless platforms.
+The API is **stateless**: nothing is stored, which keeps it simple, private, and easy to run on serverless platforms. A small in‑memory rate limiter (`app/ratelimit.py`) caps requests per IP and per day so the public demo can't use up the free LLM quota. On AWS this counter would move to DynamoDB, since Lambda instances don't share memory.
 
 ## Tech stack
 
@@ -67,7 +67,7 @@ To use a real model, get a free key from [Google AI Studio](https://aistudio.goo
 
 ## Deploy (free)
 
-- **API on Render:** New → Blueprint → pick this repo. `render.yaml` configures it. Set `GEMINI_API_KEY` and `CORS_ORIGINS` in the dashboard. Free instances sleep when idle, so the first request can take ~1 minute.
+- **API on Render:** New → Web Service → pick this repo. Root directory `backend`, build `pip install -r requirements.txt`, start `uvicorn app.main:app --host 0.0.0.0 --port $PORT`, instance type Free. Set `LLM_PROVIDER=gemini`, `GEMINI_MODEL`, `GEMINI_API_KEY`, and `CORS_ORIGINS` (your Vercel URL). `render.yaml` holds the same settings as a Blueprint. Free instances sleep when idle, so the first request can take ~1 minute.
 - **Front end on Vercel:** import the repo, set the root directory to `frontend`, and set `VITE_API_URL` to the Render URL.
 
 ## Deploying on AWS
@@ -100,8 +100,8 @@ Lambda fits this API well: requests are short and stateless, traffic is spiky, a
 ## Roadmap
 
 - [x] v0.1: fit score, ES drafts, PDF upload, TF‑IDF retrieval, mock provider, CI
+- [x] Rate limiting per IP and per day to protect the free LLM quota
 - [ ] Live demo deployed on Vercel + Render
 - [ ] Embedding‑based retrieval (vector search) and a comparison with TF‑IDF
 - [ ] Save documents in the browser so you don't re‑upload
-- [ ] Rate limiting to protect the free LLM quota
 - [ ] More ES questions (自己PR, 挫折経験)

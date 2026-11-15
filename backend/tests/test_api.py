@@ -36,3 +36,19 @@ def test_extract_text_file():
 def test_validation_rejects_empty_documents():
     r = client.post("/api/fit", json={"job_posting": JOB, "documents": []})
     assert r.status_code == 422
+
+
+def test_rate_limit_per_ip(monkeypatch):
+    from app import ratelimit
+    from app.config import settings
+
+    ratelimit.reset()
+    monkeypatch.setattr(settings, "hourly_limit_per_ip", 2)
+    body = {"job_posting": JOB, "documents": DOCS}
+    headers = {"X-Forwarded-For": "1.2.3.4"}
+    assert client.post("/api/fit", json=body, headers=headers).status_code == 200
+    assert client.post("/api/fit", json=body, headers=headers).status_code == 200
+    assert client.post("/api/fit", json=body, headers=headers).status_code == 429
+    # A different client is not affected
+    assert client.post("/api/fit", json=body, headers={"X-Forwarded-For": "5.6.7.8"}).status_code == 200
+    ratelimit.reset()

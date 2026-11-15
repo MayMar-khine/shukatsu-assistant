@@ -21,5 +21,9 @@ class Settings(BaseSettings):
     chunk_overlap: int = 80
     top_k: int = 5  # how many chunks to give the LLM
 
+    # Rate limits for /api/fit and /api/draft (protects the free LLM quota)
+    hourly_limit_per_ip: int = 20
+    daily_limit: int = 500
+
 
 settings = Settings()

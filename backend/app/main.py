@@ -9,6 +9,7 @@ from . import prompts
 from .config import settings
 from .llm import LLM, LLMError, get_llm
 from .rag import retrieve
+from .ratelimit import check_rate_limit
 from .schemas import DraftRequest, DraftResponse, ExtractResponse, FitRequest, FitResponse
 
 app = FastAPI(title="Shukatsu Assistant API", version="0.1.0")
@@ -58,7 +59,7 @@ def _evidence(job: str, docs):
     return retrieve(job, docs, settings.top_k, settings.chunk_size, settings.chunk_overlap)
 
 
-@app.post("/api/fit", response_model=FitResponse)
+@app.post("/api/fit", response_model=FitResponse, dependencies=[Depends(check_rate_limit)])
 def fit(req: FitRequest, llm: LLM = Depends(llm_dep)):
     evidence = _evidence(req.job_posting, req.documents)
     system, user = prompts.fit_prompts(req.job_posting, evidence, req.language)
@@ -75,7 +76,7 @@ def fit(req: FitRequest, llm: LLM = Depends(llm_dep)):
         raise HTTPException(502, f"LLM failed: {e}")
 
 
-@app.post("/api/draft", response_model=DraftResponse)
+@app.post("/api/draft", response_model=DraftResponse, dependencies=[Depends(check_rate_limit)])
 def draft(req: DraftRequest, llm: LLM = Depends(llm_dep)):
     evidence = _evidence(req.job_posting, req.documents)
     system, user = prompts.draft_prompts(
